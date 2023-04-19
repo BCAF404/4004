@@ -1,0 +1,57 @@
+# -*-coding:Latin-1 -*
+import requests
+import threading
+import random
+print("""
+  _________    ______
+ /_  __/   |  / ____/
+  / / / /| | / /_    
+ / / / ___ |/ __/    
+/_/ /_/  |_/_/       
+                       
+Socks4 Genarator   
+[Coded by @Professor6T9]
+https://t.me/teamanonforce    
+         
+""")
+
+def generate_proxy():
+    proxy = f"{random.randint(1,255)}.{random.randint(1,255)}.{random.randint(1,255)}.{random.randint(1,255)}:1080"
+    return proxy
+
+
+def check_proxy(proxy):
+    try:
+        response = requests.get("https://www.google.com", proxies={"socks4": proxy}, timeout=5)
+        if response.status_code == 200:
+            return True
+    except:
+        pass
+    return False
+
+
+num_proxies = int(input("Generate: "))
+num_threads = int(input("Threads: "))
+
+proxies = [generate_proxy() for _ in range(num_proxies)]
+
+def check_proxies_thread():
+    while proxies:
+        proxy = proxies.pop()
+        if check_proxy(proxy):
+            print(f"Working proxy: {proxy}")
+            with open("socks4.txt", "a") as file:
+                file.write(proxy + "\n")
+
+
+threads = []
+for _ in range(num_threads):
+    thread = threading.Thread(target=check_proxies_thread)
+    thread.start()
+    threads.append(thread)
+
+
+for thread in threads:
+    thread.join()
+
+print("Finished checking proxies. Working proxies saved to socks4.txt!")
